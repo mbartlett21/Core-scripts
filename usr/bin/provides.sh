@@ -107,9 +107,12 @@ UpdateProvidesDB()
 	/bin/ping -A -W 1 -c 2 8.8.8.8 2>&1 > /dev/null || return
 
 	getMirror
+	# the zsync command that we have only supports insecure connections
+	# if the user has a https connection then always use wget rather than downgrading
+	case $MIRROR in http:*) [ -n "`which zsync`" ] && USEZSYNC=yes ;; esac
+
 	cd "$TCEDIR"
-	if zsync -i "$LIST" -q "$MIRROR"/"$DB".zsync
-	then
+	if [ -n "$USEZSYNC" ] && zsync -i "$LIST" -q "$MIRROR"/"$DB".zsync; then
 		rm -f "$DB".zs-old
 	else
 		if [ ! -f "$LIST" ]
