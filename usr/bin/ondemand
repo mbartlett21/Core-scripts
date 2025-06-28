@@ -22,6 +22,30 @@ selectList() {
 	rm -f "$TMPFILE"
 }
 
+# --------------------------------------------------------------- #
+Usage()
+{
+	# Suppress help message if stdout is redirected.
+	[ ! -t 1 ] && exit 1
+
+	echo "
+Handle creating, deleting and executing ondemand entries
+   (stored in /etc/sysconfig/tcedir/ondemand)
+
+Usage:
+   ${0##*/} [ [ -e | -r ] Item | -c | -l ]
+
+   <none> Create ondemand entry for Item
+   -r     Remove ondemand entry for Item
+   -e     Load and execute Item
+
+   -c     List current ondemand entries
+   -l     List extensions that aren't onboot or ondemand
+"
+	exit 1
+}
+# --------------------------------------------------------------- #
+
 TCEDIR=/etc/sysconfig/tcedir
 [ -d "$TCEDIR" ] || exit 1
 WBAR_ICON_DIR="/usr/local/tce.icons"
@@ -40,7 +64,7 @@ do
 		t) TCZ=1; TYPE="tcz" ;;
 		e) EXECITEM=1 ;;
 		r) REMOVEITEM=1 ;;
-		*) exit 1 ;;
+		*) Usage ;;
 	esac
 done
 shift `expr $OPTIND - 1`
